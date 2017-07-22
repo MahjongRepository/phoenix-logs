@@ -59,13 +59,16 @@ You can add this command to the cron (for example to run each one hour) and it w
 
 To download log content for already downloaded ids use this command:
 
-`python main.py -a content -y 2009 -l 50`
+`python main.py -a content -y 2009 -l 50 -t 3`
 
-It will create three threads and parallel downloads. 
-You can choose `-l` number to download logs ~one minute and add it to a cron job. I set `-l 75`
+Where is `-l` is limit attribute and `-t` is count of threads attribute.
+
+It will create N threads and parallel downloads. 
+You can choose `-l` and `-t` numbers to download logs ~one minute and add this command to a cron job. 
+I used `-l 100 -t 3`
 
 Sometimes log can't be downloaded by different reasons (e.g., internet connection issues, tenhou server hang).
 
 You can force redownloading of these logs with this command:
 
-`python main.py -a content -y 2009 -l 50 -r`
+`python main.py -a content -y 2009 -l 50 -t 3 -r`

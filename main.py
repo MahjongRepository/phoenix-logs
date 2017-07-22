@@ -42,6 +42,11 @@ def parse_command_line_arguments():
                       default=0,
                       help='To download content script')
 
+    parser.add_option('-t', '--threads',
+                      type='int',
+                      default=3,
+                      help='Count of threads')
+
     parser.add_option('-s',
                       action='store_true',
                       dest='start',
@@ -70,7 +75,7 @@ def main():
     if opts.action == 'id':
         DownloadGameId(logs_directory, db_file, historical_download, opts.start).process()
     elif opts.action == 'content':
-        DownloadLogContent(db_file, opts.limit, opts.redownload).process()
+        DownloadLogContent(db_file, opts.limit, opts.threads, opts.redownload).process()
     else:
         print('Unknown action')
 

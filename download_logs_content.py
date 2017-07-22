@@ -26,14 +26,16 @@ class DownloadThread(threading.Thread):
 class DownloadLogContent(object):
     db_file = ''
     limit = 0
+    threads = 0
     redownload = False
 
-    def __init__(self, db_file, limit, redownload):
+    def __init__(self, db_file, limit, threads, redownload):
         """
         :param db_file: db with loaded log ids
         """
         self.db_file = db_file
         self.limit = limit
+        self.threads = threads
         self.redownload = redownload
 
     def process(self):
@@ -43,21 +45,28 @@ class DownloadLogContent(object):
         if not results:
             print('Nothing to download')
 
-        # separate array to the 3 parts and download them simultaneously
-        third = int(self.limit / 3)
-        second_limit = third * 2
+        # separate array to parts and download them simultaneously
+        threads = []
+        part = int(self.limit / self.threads)
+        for x in range(0, self.threads):
+            start = x * part
+            if (x + 1) != self.threads:
+                end = (x + 1) * part
+            else:
+                # we had to add all remaining items to the last thread
+                # for example with limit=81, threads=4 results will be distributed:
+                # 20 20 20 21
+                end = self.limit
 
-        first_thread = DownloadThread(self, results[0:third])
-        second_thread = DownloadThread(self, results[third:second_limit])
-        third_thread = DownloadThread(self, results[second_limit:])
+            threads.append(DownloadThread(self, results[start:end]))
 
-        first_thread.start()
-        second_thread.start()
-        third_thread.start()
+        # let's start all threads
+        for t in threads:
+            t.start()
 
-        first_thread.join()
-        second_thread.join()
-        third_thread.join()
+        # let's wait while all threads will be finished
+        for t in threads:
+            t.join()
 
         print('Worked time: {} seconds'.format((datetime.now() - start_time).seconds))
 

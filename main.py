@@ -52,11 +52,6 @@ def parse_command_line_arguments():
                       dest='start',
                       help='Download log ids from the start of the year')
 
-    parser.add_option('-r',
-                      action='store_true',
-                      dest='redownload',
-                      help='Redownload failed logs')
-
     opts, _ = parser.parse_args()
     return opts
 
@@ -75,7 +70,7 @@ def main():
     if opts.action == 'id':
         DownloadGameId(logs_directory, db_file, historical_download, opts.start).process()
     elif opts.action == 'content':
-        DownloadLogContent(db_file, opts.limit, opts.threads, opts.redownload).process()
+        DownloadLogContent(db_file, opts.limit, opts.threads).process()
     else:
         print('Unknown action')
 

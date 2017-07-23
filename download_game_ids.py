@@ -207,9 +207,10 @@ class DownloadGameId(object):
                               log_hash text);
             """)
             cursor.execute("CREATE INDEX is_tonpusen_index ON logs (is_tonpusen);")
-            cursor.execute("CREATE INDEX is_hirosima ON logs (is_tonpusen);")
+            cursor.execute("CREATE INDEX is_hirosima ON logs (is_hirosima);")
             cursor.execute("CREATE INDEX is_processed_index ON logs (is_processed);")
             cursor.execute("CREATE INDEX was_error_index ON logs (was_error);")
+            cursor.execute("CREATE INDEX log_hash ON logs (log_hash);")
 
             cursor.execute("""
             CREATE TABLE last_downloads(name text,

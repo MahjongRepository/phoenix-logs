@@ -27,16 +27,14 @@ class DownloadLogContent(object):
     db_file = ''
     limit = 0
     threads = 0
-    redownload = False
 
-    def __init__(self, db_file, limit, threads, redownload):
+    def __init__(self, db_file, limit, threads):
         """
         :param db_file: db with loaded log ids
         """
         self.db_file = db_file
         self.limit = limit
         self.threads = threads
-        self.redownload = redownload
 
     def process(self):
         start_time = datetime.now()
@@ -115,10 +113,7 @@ class DownloadLogContent(object):
 
         with connection:
             cursor = connection.cursor()
-            if self.redownload:
-                cursor.execute('SELECT log_id FROM logs where was_error = 1 LIMIT ?;', [self.limit])
-            else:
-                cursor.execute('SELECT log_id FROM logs where is_processed = 0 and was_error = 0 LIMIT ?;', [self.limit])
+            cursor.execute('SELECT log_id FROM logs where is_processed = 0 and was_error = 0 LIMIT ?;', [self.limit])
             data = cursor.fetchall()
             results = [x[0] for x in data]
 

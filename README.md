@@ -28,7 +28,7 @@ Example: Download http://tenhou.net/sc/raw/scraw2009.zip and put it to the `temp
 In that case script will skip downloading step.
 
 Output:
-`
+```
 Set up new database /path/to/db/2009.db
 Downloading... scraw2009.zip
 [==================================================] 50822/50822
@@ -40,7 +40,7 @@ Found 80156 games
 Temp folder was removed
 Inserting new ids to the database...
 Done
-`
+```
 
 # Download latest log ids
  
@@ -54,21 +54,29 @@ To download just log ids from latest 7 days:
 
 You can add this command to the cron (for example to run each one hour) and it will add new log ids to the DB.
 
-
 # Download log content
 
 To download log content for already downloaded ids use this command:
 
 `python main.py -a content -y 2009 -l 50 -t 3`
 
-Where is `-l` is limit attribute and `-t` is count of threads attribute.
+Where is `-l` is how much items to download and `-t` is count of threads to use.
 
 It will create N threads and parallel downloads. 
-You can choose `-l` and `-t` numbers to download logs ~one minute and add this command to a cron job. 
-I used `-l 100 -t 3`
+You can choose that `-l` and `-t` numbers to download logs that will take ~one minute and add this command to a cron job. 
+I used `-l 180 -t 5` for my downloads.
 
-Sometimes log can't be downloaded by different reasons (e.g., internet connection issues, tenhou server hang).
+# Data consistency checking
 
-You can force redownloading of these logs with this command:
+Sometimes log content can't be downloaded because of different reasons (e.g., internet connection issues, tenhou server responsibility).
 
-`python main.py -a content -y 2009 -l 50 -t 3 -r`
+And sometimes tenhou return for log A content from log B and it causes same log content for different log ids in our db.
+
+For example for 2009 year (with total 80156 logs) I had ~1500 not downloaded logs and ~800 logs with double content.
+So, ~2.9% of records had issues in the end of downloading process.
+
+To fix these issues run this command:
+
+`python debug.py -y 2009`
+
+It will detect and add all troubled records to the download queue again and you can redownload them as usual.

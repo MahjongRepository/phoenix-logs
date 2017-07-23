@@ -63,7 +63,9 @@ def main():
             print('')
 
         if not was_errors:
+            print('')
             print('Everything is fine')
+            print('')
 
 if __name__ == '__main__':
     main()

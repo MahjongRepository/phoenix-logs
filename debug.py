@@ -39,7 +39,7 @@ def main():
             print('WARNING!')
             print('There are {} records with errors'.format(with_errors))
             print('It means that they weren\'t downloaded properly')
-            cursor.execute('UPDATE logs set is_processed = 0, log_hash="", log_content="" where was_error = 1')
+            cursor.execute('UPDATE logs set is_processed = 0, was_error = 0, log_hash="", log_content="" where was_error = 1')
             print('{} records were added to the download queue again'.format(with_errors))
 
         cursor.execute('SELECT COUNT(log_hash) AS count, log_hash FROM logs GROUP BY log_hash ORDER BY count DESC;')
@@ -53,8 +53,9 @@ def main():
             print('There are {} not unique hashes in the DB'.format(count_of_not_unique))
             print('It is happens because sometimes tenhou return content that belongs to other log')
             s = ','.join(["'{}'".format(x) for x in not_unique_hashes])
-            cursor.execute('UPDATE logs set is_processed = 0, log_hash="", log_content="" where log_hash in ({});'.format(s))
+            cursor.execute('UPDATE logs set is_processed = 0, was_error = 0, log_hash="", log_content="" where log_hash in ({});'.format(s))
             print('{} records were added to the download queue again'.format(count_of_not_unique))
+            print('')
 
 if __name__ == '__main__':
     main()

@@ -77,12 +77,12 @@ class DownloadLogContent(object):
         """
         Download log content and store compressed version in the db
         """
-        url = 'http://e.mjv.jp/0/log/?{0}'.format(log_id)
+        url = 'http://e.mjv.jp/0/log/archived.cgi?{}'.format(log_id)
 
         binary_content = None
         was_error = False
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'})
             binary_content = response.content
             # it can be an error page
             if 'mjlog' not in response.text:

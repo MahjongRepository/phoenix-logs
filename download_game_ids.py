@@ -176,11 +176,15 @@ class DownloadGameId(object):
                 with gzip.open(os.path.join(self.logs_directory, file_name), "r") as f:
                     for line in f:
                         line = str(line, "utf-8")
-                        self._process_log_line(line, results)
+                        result = self._process_log_line(line)
+                        if result:
+                            results.append(result)
             else:
                 with open(os.path.join(self.logs_directory, file_name)) as f:
                     for line in f:
-                        self._process_log_line(line, results)
+                        result = self._process_log_line(line)
+                        if result:
+                            results.append(result)
 
         print("Found {} games".format(len(results)))
         shutil.rmtree(self.logs_directory)
@@ -201,6 +205,7 @@ class DownloadGameId(object):
                 """
             CREATE TABLE logs(
                 log_id text primary key,
+                date text,
                 is_tonpusen int,
                 is_sanma int,
                 is_processed int,
@@ -210,6 +215,7 @@ class DownloadGameId(object):
             );
             """
             )
+            cursor.execute("CREATE INDEX date ON logs (date);")
             cursor.execute("CREATE INDEX is_tonpusen_index ON logs (is_tonpusen);")
             cursor.execute("CREATE INDEX is_sanma ON logs (is_sanma);")
             cursor.execute("CREATE INDEX is_processed_index ON logs (is_processed);")
@@ -233,11 +239,18 @@ class DownloadGameId(object):
 
             for item in results:
                 cursor.execute(
-                    'INSERT INTO logs VALUES (?, ?, ?, 0, 0, "", "");', [item[0], item[1], item[2] and 1 or 0]
+                    "INSERT INTO logs (log_id, date, is_tonpusen, is_sanma, is_processed, was_error, log_content, log_hash) "
+                    'VALUES (?, ?, ?, ?, 0, 0, "", "");',
+                    [
+                        item["log_id"],
+                        item["game_date"],
+                        item["is_tonpusen"] and 1 or 0,
+                        item["is_sanma"] and 1 or 0,
+                    ],
                 )
         print("Done")
 
-    def _process_log_line(self, line, results):
+    def _process_log_line(self, line):
         line = line.strip()
         # sometimes there is empty lines in the file
         if not line:
@@ -249,9 +262,14 @@ class DownloadGameId(object):
         is_sanma = game_type.startswith("三")
 
         # example: <a href="http://tenhou.net/0/?log=2009022023gm-00e1-0000-c603794d">牌譜</a>
-        game_id = result[3].split("log=")[1].split('"')[0]
+        log_id = result[3].split("log=")[1].split('"')[0]
 
         # example: 四鳳東喰赤
         is_tonpusen = game_type[2] == "東"
 
-        results.append([game_id, is_tonpusen, is_sanma])
+        # parse date from log id and convert it to sqlite date format
+        game_date = datetime.strptime(
+            log_id.split("gm-")[0][0:8] + result[0].strip(), "%Y%m%d%H:%M"
+        ).strftime("%Y-%m-%d %H:%M")
+
+        return {"log_id": log_id, "is_tonpusen": is_tonpusen, "is_sanma": is_sanma, "game_date": game_date}

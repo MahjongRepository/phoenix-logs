@@ -202,7 +202,7 @@ class DownloadGameId(object):
             CREATE TABLE logs(
                 log_id text primary key,
                 is_tonpusen int,
-                is_hirosima int,
+                is_sanma int,
                 is_processed int,
                 was_error int,
                 log_content text,
@@ -211,7 +211,7 @@ class DownloadGameId(object):
             """
             )
             cursor.execute("CREATE INDEX is_tonpusen_index ON logs (is_tonpusen);")
-            cursor.execute("CREATE INDEX is_hirosima ON logs (is_hirosima);")
+            cursor.execute("CREATE INDEX is_sanma ON logs (is_sanma);")
             cursor.execute("CREATE INDEX is_processed_index ON logs (is_processed);")
             cursor.execute("CREATE INDEX was_error_index ON logs (was_error);")
             cursor.execute("CREATE INDEX log_hash ON logs (log_hash);")
@@ -246,7 +246,7 @@ class DownloadGameId(object):
         result = line.split("|")
         game_type = result[2].strip()
 
-        is_hirosima = game_type.startswith("三")
+        is_sanma = game_type.startswith("三")
 
         # example: <a href="http://tenhou.net/0/?log=2009022023gm-00e1-0000-c603794d">牌譜</a>
         game_id = result[3].split("log=")[1].split('"')[0]
@@ -254,4 +254,4 @@ class DownloadGameId(object):
         # example: 四鳳東喰赤
         is_tonpusen = game_type[2] == "東"
 
-        results.append([game_id, is_tonpusen, is_hirosima])
+        results.append([game_id, is_tonpusen, is_sanma])

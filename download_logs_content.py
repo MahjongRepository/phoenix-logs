@@ -76,7 +76,7 @@ class DownloadLogContent(object):
         """
         Download log content and store compressed version in the db
         """
-        url = "http://e.mjv.jp/0/log/archived.cgi?{}".format(log_id)
+        url = "https://tenhou.net/0/log/?{}".format(log_id)
 
         binary_content = None
         was_error = False
@@ -90,6 +90,7 @@ class DownloadLogContent(object):
             binary_content = response.content
             # it can be an error page
             if "mjlog" not in response.text:
+                print("There is no log content in response")
                 was_error = True
         except Exception as e:
             print(e)
@@ -107,6 +108,7 @@ class DownloadLogContent(object):
                     compressed_content = bz2.compress(binary_content)
                     log_hash = hashlib.sha256(compressed_content).hexdigest()
                 except:
+                    print("Cant compress log content")
                     was_error = True
 
             cursor.execute(

@@ -16,7 +16,6 @@ current_year = str(datetime.now().year)
 
 
 def set_up_folders():
-
     if not os.path.exists(logs_directory):
         mkpath(logs_directory)
 

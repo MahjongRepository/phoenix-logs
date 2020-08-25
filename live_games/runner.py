@@ -1,32 +1,66 @@
 import json
+import logging
 import os
 import re
+import threading
+from time import sleep
 
 import requests
 
-from live_games.db import get_db_name, create_new_database
+from live_games.db import get_db_name, create_new_database, insert_log_record
 from live_games.watcher import GameWatcher
 
 
-class WatcherRunner:
+logger = logging.getLogger("watcher")
+
+
+class Watcher:
     TENHOU_WG_URL = "https://mjv.jp/0/wg/0.js"
 
     def __init__(self, db_folder):
         self.db_folder = db_folder
 
-    def watch(self):
+    def watch_games(self):
+        added_game_ids = None
+
+        while True:
+            games = self.get_current_games(only_tokujou_games=True)
+            loaded_game_ids = [x["game_id"] for x in games]
+
+            # let's skip games that already in progress when we start the script
+            # there are too many of them and tenhou closes so many connections
+            if added_game_ids is None:
+                added_game_ids = loaded_game_ids
+
+            new_games = list(set(loaded_game_ids) - set(added_game_ids))
+            added_game_ids = loaded_game_ids
+            logger.debug(f"New games: {', '.join(new_games)}")
+
+            for game_id in new_games:
+                game = [x for x in games if x["game_id"] == game_id][0]
+
+                db_path = self.init_db_and_get_db_path()
+                threading.Thread(
+                    target=lambda _game, _db_path: Watcher.run_one_game_watcher_and_save_results(
+                        _game, _db_path
+                    ),
+                    args=([game, db_path]),
+                ).start()
+
+            sleep(60)
+
+    @staticmethod
+    def run_one_game_watcher_and_save_results(game, db_path):
         watcher = GameWatcher()
-        games = self.get_current_games(only_tokujou_games=True)
+        game_id = game["game_id"]
 
-        for game in reversed(games):
-            db_path = self.init_db_and_get_db_path()
+        log_content, game_started = watcher.watch_one_game(game_id)
+        if not log_content:
+            return False
 
-            if game["game_id"] != "6453ADEB":
-                continue
+        insert_log_record(db_path, game, log_content, game_started)
 
-            result = watcher.watch_one_game(game["game_id"])
-
-            break
+        return True
 
     def init_db_and_get_db_path(self) -> str:
         db_path = os.path.join(self.db_folder, get_db_name())
@@ -57,7 +91,7 @@ class WatcherRunner:
                 games.append({"is_tonpusen": is_tonpusen, "game_id": game_id})
 
         except Exception as e:
-            print(e)
+            logger.error("Can't load current games", exc_info=e)
 
         return games
 

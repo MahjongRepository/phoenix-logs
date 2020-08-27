@@ -76,7 +76,7 @@ class DownloadLogContent(object):
         """
         Download log content and store compressed version in the db
         """
-        url = "https://tenhou.net/0/log/?{}".format(log_id)
+        url = "http://tenhou.net/0/log/?{}".format(log_id)
 
         binary_content = None
         was_error = False

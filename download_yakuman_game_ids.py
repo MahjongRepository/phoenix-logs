@@ -1,5 +1,6 @@
 import json
 import os
+from optparse import OptionParser
 
 import requests
 
@@ -14,13 +15,27 @@ db_folder = os.path.join(current_directory, "db")
 def main():
     start_year = 2006
 
+    parser = OptionParser()
+    parser.add_option("-y", "--year", type="string")
+    parser.add_option("-m", "--month", type="string")
+    parser.add_option("-p", "--db_path", type="string")
+    opts, _ = parser.parse_args()
+
     current_date = get_current_time()
     stop_year = current_date.year
 
-    db_file = os.path.join(db_folder, "yakuman.db")
+    if opts.db_path:
+        db_file = opts.db_path
+    else:
+        db_file = os.path.join(db_folder, "yakuman.db")
+
     downloader = DownloadGameId(None, db_file, None, None)
     if not os.path.exists(db_file):
         downloader.set_up_database()
+
+    if opts.year and opts.month:
+        download_ids_for_date(downloader, opts.year, opts.month, [])
+        return
 
     added_log_ids = []
 
@@ -36,28 +51,33 @@ def main():
             months = ["{:02}".format(x) for x in range(1, current_date.month)]
 
         for month in months:
-            url = "http://tenhou.net/sc/{}/{}/ykm.js".format(year, month)
-            print(url)
+            download_ids_for_date(downloader, year, month, added_log_ids)
 
-            response = requests.get(url).content.decode("utf-8")
 
-            if "ykm=['" in response:
-                data = parse_new_format(response)
-            else:
-                data = parse_old_format(response)
+def download_ids_for_date(downloader, year: int, month: str, added_log_ids):
+    url = f"http://tenhou.net/sc/{year}/{month}/ykm.js"
+    print(url)
 
-            results = []
-            for x in data:
-                date = format_date(year, month, x[0])
-                log_id = clean_up_log_id(x[1])
+    response = requests.get(url).content.decode("utf-8")
 
-                if log_id not in added_log_ids:
-                    added_log_ids.append(log_id)
-                    results.append(
-                        {"log_id": log_id, "game_date": date, "is_tonpusen": 0, "is_sanma": 0,}
-                    )
+    if "ykm=['" in response:
+        data = parse_new_format(response)
+    else:
+        data = parse_old_format(response)
 
-            downloader.add_logs_to_database(results)
+    results = []
+    for x in data:
+        date = format_date(year, month, x[0])
+        log_id = clean_up_log_id(x[1])
+
+        if log_id not in added_log_ids:
+            added_log_ids.append(log_id)
+            results.append(
+                {"log_id": log_id, "game_date": date, "is_tonpusen": 0, "is_sanma": 0,}
+            )
+
+    downloader.add_logs_to_database(results)
+    print(f"Added {len(results)} logs")
 
 
 def parse_new_format(data: str):

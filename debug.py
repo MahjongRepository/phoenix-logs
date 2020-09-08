@@ -10,9 +10,14 @@ db_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db")
 def main():
     parser = OptionParser()
     parser.add_option("-y", "--year", type="string", default=str(datetime.now().year), help="Target year")
+    parser.add_option("-p", "--db_path", type="string")
     opts, _ = parser.parse_args()
 
-    db_file = os.path.join(db_folder, "{}.db".format(opts.year))
+    if opts.db_path:
+        db_file = opts.db_path
+    else:
+        db_file = os.path.join(db_folder, f"{opts.year}.db")
+
     connection = sqlite3.connect(db_file)
 
     with connection:

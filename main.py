@@ -27,13 +27,11 @@ def parse_command_line_arguments():
     parser = OptionParser()
 
     parser.add_option(
-        "-y", "--year", type="string", default=current_year, help="Target year to download logs"
+        "-y", "--year", type="string", default=None, help="Target year to download logs"
     )
-
+    parser.add_option("-p", "--db_path", type="string")
     parser.add_option("-a", "--action", type="string", default="id", help="id or content")
-
     parser.add_option("-l", "--limit", type="int", default=0, help="To download content script")
-
     parser.add_option("-t", "--threads", type="int", default=3, help="Count of threads")
 
     parser.add_option(
@@ -48,7 +46,11 @@ def main():
     set_up_folders()
 
     opts = parse_command_line_arguments()
-    db_file = os.path.join(db_folder, "{}.db".format(opts.year))
+
+    if opts.db_path:
+        db_file = opts.db_path
+    else:
+        db_file = os.path.join(db_folder, f"{opts.year}.db")
 
     # special condition to download historical data from previous years
     historical_download = None

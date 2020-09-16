@@ -13,7 +13,7 @@ logger = logging.getLogger("watcher")
 
 
 def main():
-    set_up_logging()
+    # set_up_logging()
 
     if not os.path.exists(db_folder):
         mkpath(db_folder)

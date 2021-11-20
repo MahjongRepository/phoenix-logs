@@ -49,13 +49,19 @@ Done
  
 To download games from 1 January (current year) until (current day - 7 days) specify `-s` flag:
 
-`python main.py -a id -s`
+`python main.py -a id -s -p db/2021.db`
 
 To download just log IDs from the latest 7 days:
 
-`python main.py -a id`
+`python main.py -a id -p db/2021.db`
 
 You can add this command to the cron (for example to run each one hour) and it will add new log IDs to the DB.
+
+# Download yakuman log IDs
+
+You can download hanchans where yakuman was collected for past months with this command:
+
+`python download_yakuman_game_ids.py -y 2020 -m 11 -p /path/to/db.db`
 
 # Download log content
 

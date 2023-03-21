@@ -25,8 +25,6 @@ def main():
     if opts.debug:
         db_path = os.path.join(db_folder, get_db_name())
         count = get_games_count(db_path)
-        # logger.debug(db_path)
-        # logger.debug(f"Games in DB: {count}")
         print(db_path)
         print(f"Games in DB: {count}")
     else:

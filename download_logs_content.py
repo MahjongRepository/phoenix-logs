@@ -4,6 +4,7 @@ Script will load log ids from the database and will download log content
 """
 import bz2
 import hashlib
+import re
 import sqlite3
 import threading
 from datetime import datetime
@@ -26,14 +27,18 @@ class DownloadLogContent(object):
     db_file = ""
     limit = 0
     threads = 0
+    strip_logs = False
 
-    def __init__(self, db_file, limit, threads):
+    shuffle_regex = rb'<SHUFFLE[^>]*>'
+
+    def __init__(self, db_file, limit, threads, strip_logs):
         """
         :param db_file: db with loaded log ids
         """
         self.db_file = db_file
         self.limit = limit
         self.threads = threads
+        self.strip_logs = strip_logs
 
     def process(self):
         start_time = datetime.now()
@@ -96,6 +101,9 @@ class DownloadLogContent(object):
             print(e)
             was_error = True
 
+        if self.strip_logs:
+            binary_content = self.strip_log_tags(binary_content)
+
         connection = sqlite3.connect(self.db_file)
 
         with connection:
@@ -107,7 +115,8 @@ class DownloadLogContent(object):
                 try:
                     compressed_content = bz2.compress(binary_content)
                     log_hash = hashlib.sha256(compressed_content).hexdigest()
-                except:
+                except Exception as e:
+                    print(e)
                     print("Cant compress log content")
                     was_error = True
 
@@ -115,6 +124,10 @@ class DownloadLogContent(object):
                 "UPDATE logs SET is_processed = ?, was_error = ?, log_content = ?, log_hash = ? WHERE log_id = ?;",
                 [1, was_error and 1 or 0, compressed_content, log_hash, log_id],
             )
+
+    def strip_log_tags(self, log_content):
+        # for now only strip shuffle seed
+        return re.sub(self.shuffle_regex, b'', log_content)
 
     def load_not_processed_logs(self):
         connection = sqlite3.connect(self.db_file)

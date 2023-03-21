@@ -29,10 +29,10 @@ def parse_command_line_arguments():
     parser.add_option("-a", "--action", type="string", default="id", help="id or content")
     parser.add_option("-l", "--limit", type="int", default=0, help="To download content script")
     parser.add_option("-t", "--threads", type="int", default=3, help="Count of threads")
-
     parser.add_option(
         "-s", action="store_true", dest="start", help="Download log ids from the start of the year"
     )
+    parser.add_option("--strip", action="store_true", default=False, help="Strip some tags from logs")
 
     opts, _ = parser.parse_args()
     return opts
@@ -50,13 +50,13 @@ def main():
 
     # special condition to download historical data from previous years
     historical_download = None
-    if not opts.year == current_year:
+    if opts.year != current_year:
         historical_download = opts.year
 
     if opts.action == "id":
         DownloadGameId(logs_directory, db_file, historical_download, opts.start).process()
     elif opts.action == "content":
-        DownloadLogContent(db_file, opts.limit, opts.threads).process()
+        DownloadLogContent(db_file, opts.limit, opts.threads, opts.strip).process()
     else:
         print("Unknown action")
 

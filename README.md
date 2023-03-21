@@ -80,7 +80,7 @@ I used `-l 180 -t 5` for my downloads.
 
 Sometimes log content can't be downloaded because of different reasons (e.g., internet connection issues, tenhou server responsibility).
 
-And sometimes tenhou returns for log A content from log B and it causes the same log content for different log IDs in our DB.
+And sometimes tenhou returns for `log A` content from `log B` and it causes the same log content for different log IDs in our DB.
 
 For example for the 2009 year (with total 80156 logs) I had ~1500 not downloaded logs and ~800 logs with double content.
 So, ~2.9% of records had issues at the end of the downloading process.
@@ -89,4 +89,4 @@ To fix these issues run this command:
 
 `python debug.py -y 2009`
 
-It will detect and add all broken records to the download queue again and you can redownload them as usual.
+It will detect and add all broken records to the download queue again, and you can re-download them as usual.

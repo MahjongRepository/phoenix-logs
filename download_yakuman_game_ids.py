@@ -7,7 +7,6 @@ import requests
 from download_game_ids import DownloadGameId
 from live_games.db import get_current_time
 
-
 current_directory = os.path.dirname(os.path.realpath(__file__))
 db_folder = os.path.join(current_directory, "db")
 
@@ -55,7 +54,7 @@ def main():
 
 
 def download_ids_for_date(downloader, year: int, month: str, added_log_ids):
-    url = f"http://tenhou.net/sc/{year}/{month}/ykm.js"
+    url = f"https://tenhou.net/sc/{year}/{month}/ykm.js"
     print(url)
 
     response = requests.get(url).content.decode("utf-8")
@@ -73,7 +72,12 @@ def download_ids_for_date(downloader, year: int, month: str, added_log_ids):
         if log_id not in added_log_ids:
             added_log_ids.append(log_id)
             results.append(
-                {"log_id": log_id, "game_date": date, "is_tonpusen": 0, "is_sanma": 0,}
+                {
+                    "log_id": log_id,
+                    "game_date": date,
+                    "is_tonpusen": 0,
+                    "is_sanma": 0,
+                }
             )
 
     downloader.add_logs_to_database(results)

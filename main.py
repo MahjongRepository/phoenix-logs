@@ -1,9 +1,7 @@
 import os
-from distutils.dir_util import mkpath
-
-from optparse import OptionParser
-
 from datetime import datetime
+from distutils.dir_util import mkpath
+from optparse import OptionParser
 
 from download_game_ids import DownloadGameId
 from download_logs_content import DownloadLogContent
@@ -26,9 +24,7 @@ def set_up_folders():
 def parse_command_line_arguments():
     parser = OptionParser()
 
-    parser.add_option(
-        "-y", "--year", type="string", default=None, help="Target year to download logs"
-    )
+    parser.add_option("-y", "--year", type="string", default=None, help="Target year to download logs")
     parser.add_option("-p", "--db_path", type="string")
     parser.add_option("-a", "--action", type="string", default="id", help="id or content")
     parser.add_option("-l", "--limit", type="int", default=0, help="To download content script")

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import sqlite3
-from optparse import OptionParser
 from datetime import datetime
+from optparse import OptionParser
 
 db_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db")
 

@@ -7,9 +7,8 @@ from time import sleep
 
 import requests
 
-from live_games.db import get_db_name, create_new_database, insert_log_record
+from live_games.db import create_new_database, get_db_name, insert_log_record
 from live_games.watcher import GameWatcher
-
 
 logger = logging.getLogger("watcher")
 

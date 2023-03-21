@@ -5,17 +5,16 @@ It can be run once a day or so, to get latest games IDs.
 Or it can be run to get data from previous years from .zip file.
 """
 
-import shutil
-import zipfile
-from datetime import datetime
 import calendar
 import gzip
 import os
-
+import shutil
 import sqlite3
+import sys
+import zipfile
+from datetime import datetime
 
 import requests
-import sys
 
 
 class DownloadGameId(object):
@@ -66,11 +65,11 @@ class DownloadGameId(object):
                 last_name = data[0]
                 print("Latest downloaded archive: {}".format(last_name))
 
-        download_url = "http://tenhou.net/sc/raw/dat/"
+        download_url = "https://tenhou.net/sc/raw/dat/"
         if self.from_start:
-            url = "http://tenhou.net/sc/raw/list.cgi?old"
+            url = "https://tenhou.net/sc/raw/list.cgi?old"
         else:
-            url = "http://tenhou.net/sc/raw/list.cgi"
+            url = "https://tenhou.net/sc/raw/list.cgi"
 
         response = requests.get(url)
         response = response.text.replace("list(", "").replace(");", "")
@@ -110,7 +109,7 @@ class DownloadGameId(object):
 
     def download_year_archive(self, year):
         archive_name = "scraw{}.zip".format(year)
-        download_url = "http://tenhou.net/sc/raw/{}".format(archive_name)
+        download_url = "https://tenhou.net/sc/raw/{}".format(archive_name)
 
         archive_path = os.path.join(self.logs_directory, archive_name)
         if not os.path.exists(archive_path):
@@ -224,7 +223,7 @@ class DownloadGameId(object):
 
             cursor.execute(
                 """
-            CREATE TABLE last_downloads(name text, date int);
+                CREATE TABLE last_downloads(name text, date int);
             """
             )
 
@@ -261,7 +260,7 @@ class DownloadGameId(object):
 
         is_sanma = game_type.startswith("三")
 
-        # example: <a href="http://tenhou.net/0/?log=2009022023gm-00e1-0000-c603794d">牌譜</a>
+        # example: <a href="https://tenhou.net/0/?log=2009022023gm-00e1-0000-c603794d">牌譜</a>
         log_id = result[3].split("log=")[1].split('"')[0]
 
         # example: 四鳳東喰赤

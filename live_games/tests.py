@@ -5,7 +5,6 @@ from live_games.watcher import GameWatcher
 
 
 class WatcherUniTest(TestCase):
-
     def test_strip_log(self):
         original_log_content = [
             '<LN n="nV1nB1MM1DM" j="C3B1C3B1D4B4B4D3C1D12C1B3D12B15B2B3C1B1C" g="Ds1E2E1Eg3U1g12Ew3E1CQ12CY4k12c12S1CT2BL2t2D1Y1J1D1e2D"/>',

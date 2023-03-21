@@ -9,8 +9,8 @@ For example, these logs can be useful for machine learning.
 This repo contains two main scripts:
 
 - Download and store log IDs. 
-It can both obtain game IDs from year archive (e.g., http://tenhou.net/sc/raw/scraw2009.zip) 
-or from latest phoenix games page (http://tenhou.net/sc/raw/list.cgi).
+It can both obtain game IDs from year archive (e.g., https://tenhou.net/sc/raw/scraw2009.zip) 
+or from latest phoenix games page (https://tenhou.net/sc/raw/list.cgi).
 - Download logs content for already collected log IDs.
 
 # Installation
@@ -28,7 +28,7 @@ python main.py -a id -y 2009
 
 If the script is doing download really slow, you can download the archive with `wget` or your browser and put it in the `temp` folder. 
 
-Example: Download http://tenhou.net/sc/raw/scraw2009.zip and put it to the `temp/scraw2009.zip`. In that case, the script will skip the downloading step.
+Example: Download https://tenhou.net/sc/raw/scraw2009.zip and put it to the `temp/scraw2009.zip`. In that case, the script will skip the downloading step.
 
 Output:
 ```

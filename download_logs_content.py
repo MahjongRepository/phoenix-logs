@@ -3,7 +3,6 @@
 Script will load log ids from the database and will download log content
 """
 import bz2
-import hashlib
 import re
 import sqlite3
 import threading
@@ -110,19 +109,17 @@ class DownloadLogContent(object):
             cursor = connection.cursor()
 
             compressed_content = ""
-            log_hash = ""
             if not was_error:
                 try:
                     compressed_content = bz2.compress(binary_content)
-                    log_hash = hashlib.sha256(compressed_content).hexdigest()
                 except Exception as e:
                     print(e)
                     print("Cant compress log content")
                     was_error = True
 
             cursor.execute(
-                "UPDATE logs SET is_processed = ?, was_error = ?, log_content = ?, log_hash = ? WHERE log_id = ?;",
-                [1, was_error and 1 or 0, compressed_content, log_hash, log_id],
+                "UPDATE logs SET is_processed = ?, was_error = ?, log_content = ? WHERE log_id = ?;",
+                [1, was_error and 1 or 0, compressed_content, log_id],
             )
 
     def strip_log_tags(self, log_content):

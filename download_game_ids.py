@@ -209,8 +209,7 @@ class DownloadGameId(object):
                 is_sanma int,
                 is_processed int,
                 was_error int,
-                log_content text,
-                log_hash text
+                log_content text
             );
             """
             )
@@ -232,8 +231,8 @@ class DownloadGameId(object):
 
             for item in results:
                 cursor.execute(
-                    "INSERT INTO logs (log_id, date, is_tonpusen, is_sanma, is_processed, was_error, log_content, log_hash) "
-                    'VALUES (?, ?, ?, ?, 0, 0, "", "");',
+                    "INSERT INTO logs (log_id, date, is_tonpusen, is_sanma, is_processed, was_error, log_content)"
+                    'VALUES (?, ?, ?, ?, 0, 0, "");',
                     [
                         item["log_id"],
                         item["game_date"],

@@ -29,7 +29,7 @@ class DownloadLogContent(object):
     threads = 0
     strip_logs = False
 
-    shuffle_regex = rb'<SHUFFLE[^>]*>'
+    shuffle_regex = rb"<SHUFFLE[^>]*>"
 
     def __init__(self, db_file, limit, threads, strip_logs):
         """
@@ -127,7 +127,7 @@ class DownloadLogContent(object):
 
     def strip_log_tags(self, log_content):
         # for now only strip shuffle seed
-        return re.sub(self.shuffle_regex, b'', log_content)
+        return re.sub(self.shuffle_regex, b"", log_content)
 
     def load_not_processed_logs(self):
         connection = sqlite3.connect(self.db_file)

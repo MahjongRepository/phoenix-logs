@@ -214,12 +214,6 @@ class DownloadGameId(object):
             );
             """
             )
-            cursor.execute("CREATE INDEX date ON logs (date);")
-            cursor.execute("CREATE INDEX is_tonpusen_index ON logs (is_tonpusen);")
-            cursor.execute("CREATE INDEX is_sanma ON logs (is_sanma);")
-            cursor.execute("CREATE INDEX is_processed_index ON logs (is_processed);")
-            cursor.execute("CREATE INDEX was_error_index ON logs (was_error);")
-            cursor.execute("CREATE INDEX log_hash ON logs (log_hash);")
 
             cursor.execute(
                 """

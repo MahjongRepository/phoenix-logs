@@ -31,7 +31,6 @@ def create_new_database(db_path):
                 );
             """
         )
-        cursor.execute("CREATE INDEX is_tonpusen_index ON live_logs (is_tonpusen);")
 
 
 def insert_log_record(db_path, game, log_content, game_started):

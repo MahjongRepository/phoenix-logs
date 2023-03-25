@@ -30,6 +30,9 @@ def parse_command_line_arguments():
     parser.add_option("-l", "--limit", type="int", default=0, help="To download content script")
     parser.add_option("-t", "--threads", type="int", default=3, help="Count of threads")
     parser.add_option(
+        "-f", "--from_archive", action="store_true", dest="from_archive", help="Extract logs from archive"
+    )
+    parser.add_option(
         "-s", action="store_true", dest="start", help="Download log ids from the start of the year"
     )
     parser.add_option("--strip", action="store_true", default=False, help="Strip some tags from logs")
@@ -48,13 +51,8 @@ def main():
     else:
         db_file = os.path.join(db_folder, f"{opts.year}.db")
 
-    # special condition to download historical data from previous years
-    historical_download = None
-    if opts.year != current_year:
-        historical_download = opts.year
-
     if opts.action == "id":
-        DownloadGameId(logs_directory, db_file, historical_download, opts.start).process()
+        DownloadGameId(logs_directory, db_file, opts.year, opts.start, opts.from_archive).process()
     elif opts.action == "content":
         DownloadLogContent(db_file, opts.limit, opts.threads, opts.strip).process()
     else:

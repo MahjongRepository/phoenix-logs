@@ -21,23 +21,15 @@ Just install requirements with command `pip install -r requirements.txt`
 
 For example, we want to download game IDs for the 2009 year (keep in mind that phoenix games started to appear only from the 2009 year).
 
+Download https://tenhou.net/sc/raw/scraw2009.zip and put it to the `temp/scraw2009.zip`.
+
 Input command:
 ```
-python main.py -a id -y 2009
+python main.py -a id -y 2009 --from_archive
 ```
-
-If the script is doing download really slow, you can download the archive with `wget` or your browser and put it in the `temp` folder. 
-
-Example: Download https://tenhou.net/sc/raw/scraw2009.zip and put it to the `temp/scraw2009.zip`. In that case, the script will skip the downloading step.
 
 Output:
 ```
-Set up new database /path/to/db/2009.db
-Downloading... scraw2009.zip
-[==================================================] 50822/50822
-Downloaded
-Extracting archive...
-Extracted
 Preparing the list of games...
 Found 80156 games
 Temp folder was removed

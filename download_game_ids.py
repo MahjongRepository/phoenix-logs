@@ -23,25 +23,30 @@ class DownloadGameId(object):
     historical_download = None
     from_start = False
 
-    def __init__(self, logs_directory, db_file, historical_download, from_start):
+    def __init__(self, logs_directory, db_file, year, from_start, extract_from_archive):
         """
         :param logs_directory: directory where to store downloaded logs
         :param db_file: to save log ids
-        :param historical_download: year or None
+        :param year: year for what we need to download data
         :param from_start: download logs from the start of the year
         """
         self.logs_directory = logs_directory
         self.db_file = db_file
-        self.historical_download = historical_download
+        self.year = year
         self.from_start = from_start
+        self.extract_from_archive = extract_from_archive
+
+        self.headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"
+        }
 
     def process(self):
         # for the initial set up
         if not os.path.exists(self.db_file):
             self.set_up_database()
 
-        if self.historical_download:
-            records_was_added = self.download_year_archive(self.historical_download)
+        if self.extract_from_archive:
+            records_was_added = self.process_year_archive(self.year)
         else:
             records_was_added = self.download_latest_games_id()
 
@@ -71,7 +76,7 @@ class DownloadGameId(object):
         else:
             url = "https://tenhou.net/sc/raw/list.cgi"
 
-        response = requests.get(url)
+        response = requests.get(url, headers=self.headers)
         response = response.text.replace("list(", "").replace(");", "")
         response = response.split(",\r\n")
 
@@ -93,7 +98,7 @@ class DownloadGameId(object):
                         print("Downloading... {}".format(archive_name))
 
                         url = "{}{}".format(download_url, archive_name)
-                        page = requests.get(url)
+                        page = requests.get(url, headers=self.headers)
                         with open(archive_path, "wb") as f:
                             f.write(page.content)
 
@@ -107,39 +112,10 @@ class DownloadGameId(object):
 
         return records_was_added
 
-    def download_year_archive(self, year):
+    def process_year_archive(self, year):
         archive_name = "scraw{}.zip".format(year)
-        download_url = "https://tenhou.net/sc/raw/{}".format(archive_name)
 
         archive_path = os.path.join(self.logs_directory, archive_name)
-        if not os.path.exists(archive_path):
-            print("Downloading... {}".format(archive_name))
-
-            response = requests.get(download_url, stream=True)
-            total_length = response.headers.get("content-length")
-
-            with open(archive_path, "wb") as f:
-                # no content length header
-                if total_length is None:
-                    f.write(response.content)
-                else:
-                    downloaded = 0
-                    total_length = int(total_length)
-                    total_length_in_kb = int(total_length / 1024)
-                    for data in response.iter_content(chunk_size=40960):
-                        downloaded += len(data)
-                        f.write(data)
-
-                        # simple progress bar
-                        done = int(50 * downloaded / total_length)
-                        downloaded_in_kb = int(downloaded / 1024)
-                        sys.stdout.write("\t{}/{}".format(downloaded_in_kb, total_length_in_kb))
-                        sys.stdout.write("\r[%s%s]" % ("=" * done, " " * (50 - done)))
-                        sys.stdout.flush()
-            print("")
-            print("Downloaded")
-        else:
-            print("{} already exists".format(archive_name))
 
         print("Extracting archive...")
         with zipfile.ZipFile(archive_path) as zip_file:
@@ -184,6 +160,8 @@ class DownloadGameId(object):
                         result = self._process_log_line(line)
                         if result:
                             results.append(result)
+
+        results = [x for x in results if x["game_date"][:4] == str(self.year)]
 
         print("Found {} games".format(len(results)))
         shutil.rmtree(self.logs_directory)

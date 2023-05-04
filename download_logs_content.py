@@ -44,6 +44,12 @@ class DownloadLogContent(object):
         results = self.load_not_processed_logs()
         if not results:
             print("Nothing to download")
+            return
+
+        total_results = len(results)
+        if total_results < self.limit:
+            print("We have only {} records to download".format(total_results))
+            self.limit = total_results
 
         # separate array to parts and download them simultaneously
         threads = []

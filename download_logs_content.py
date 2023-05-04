@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Script will load log ids from the database and will download log content
 """
-import bz2
+import gzip
 import re
 import sqlite3
 import threading
@@ -80,7 +79,7 @@ class DownloadLogContent(object):
         """
         Download log content and store compressed version in the db
         """
-        url = "https://tenhou.net/0/log/?{}".format(log_id)
+        url = f"https://tenhou.net/0/log/?{log_id}"
 
         binary_content = None
         was_error = False
@@ -111,7 +110,7 @@ class DownloadLogContent(object):
             compressed_content = ""
             if not was_error:
                 try:
-                    compressed_content = bz2.compress(binary_content)
+                    compressed_content = gzip.compress(binary_content)
                 except Exception as e:
                     print(e)
                     print("Cant compress log content")
@@ -132,7 +131,8 @@ class DownloadLogContent(object):
         with connection:
             cursor = connection.cursor()
             cursor.execute(
-                "SELECT log_id FROM logs where is_processed = 0 and was_error = 0 LIMIT ?;", [self.limit]
+                "SELECT log_id FROM logs where is_processed = 0 and was_error = 0 LIMIT ?;",
+                [self.limit],
             )
             data = cursor.fetchall()
             results = [x[0] for x in data]

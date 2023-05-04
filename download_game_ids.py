@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Script to download phoenix games and store their IDs in the database
 It can be run once a day or so, to get latest games IDs.
@@ -10,7 +9,6 @@ import gzip
 import os
 import shutil
 import sqlite3
-import sys
 import zipfile
 from datetime import datetime
 

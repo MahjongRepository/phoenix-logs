@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import sqlite3
 from datetime import datetime
@@ -45,11 +44,9 @@ def main():
                 'UPDATE logs set is_processed = 0, was_error = 0, log_content="" where was_error = 1'
             )
             print("{} records were added to the download queue again".format(with_errors))
-            print("")
         else:
             print("")
             print("Everything is fine")
-            print("")
 
 
 if __name__ == "__main__":

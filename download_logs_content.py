@@ -40,7 +40,7 @@ class DownloadLogContent(object):
 
     def process(self):
         start_time = datetime.now()
-        print("Load {} records".format(self.limit))
+        print(f"Loading {self.limit} records")
         results = self.load_not_processed_logs()
         if not results:
             print("Nothing to download")
@@ -137,7 +137,7 @@ class DownloadLogContent(object):
         with connection:
             cursor = connection.cursor()
             cursor.execute(
-                "SELECT log_id FROM logs where is_processed = 0 and was_error = 0 LIMIT ?;",
+                "SELECT log_id FROM logs where is_processed = 0 and was_error = 0 ORDER BY log_id LIMIT ?;",
                 [self.limit],
             )
             data = cursor.fetchall()

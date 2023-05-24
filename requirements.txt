@@ -1,4 +1,4 @@
-requests==2.28.2
+requests==2.31.0
 pytz==2022.7.1
 tqdm==4.65.0
 

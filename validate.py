@@ -6,6 +6,8 @@ from datetime import datetime
 from optparse import OptionParser
 from typing import List
 
+from tqdm import tqdm
+
 db_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db")
 
 
@@ -32,12 +34,14 @@ def main():
 
         print("Fetching logs...")
         cursor.execute("SELECT log_id, log_content FROM logs where is_processed = 1;")
-        data = cursor.fetchall()
+        data = list(cursor.fetchall())
 
-        print("Decompressing and checking logs content...")
         parser = LogParser()
         valid_logs = 0
-        for x in data:
+
+        print("Decompressing and validating logs...")
+        bar = tqdm(data)
+        for x in bar:
             was_error = False
             log_id = x[0]
             try:
@@ -56,7 +60,7 @@ def main():
 
             if was_error:
                 were_errors = True
-                print("Found wrong log content, adding it back to download queue")
+                bar.write("Found wrong log content, adding it back to download queue")
                 cursor.execute(
                     f'UPDATE logs set is_processed = 0, was_error = 0, log_content="" where log_id = "{log_id}"'
                 )

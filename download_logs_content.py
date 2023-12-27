@@ -78,8 +78,11 @@ class DownloadLogContent(object):
 
     def download_logs(self, results):
         for log_id in results:
-            print("Process {}".format(log_id))
-            self.download_log_content(log_id)
+            try:
+                print("Process {}".format(log_id))
+                self.download_log_content(log_id)
+            except:
+                pass
 
     def download_log_content(self, log_id):
         """

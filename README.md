@@ -57,7 +57,11 @@ You can add this command to the cron (for example to run each one hour) and it w
 
 You can download hanchans where yakuman was collected for specific year and month with this command:
 
-`python download_yakuman_game_ids.py -y 2020 -m 11 -p /path/to/db.db`
+`python download_yakuman_game_ids.py -y 2006 -m 10`
+
+It will be saved to the `db/yakuman/2006/10.db` file.
+
+After that you can download content for these IDs with this command: `python main.py -a content -p db/yakuman/2006/10.db -l 100000 -t 10 --strip`
 
 # Download log content
 

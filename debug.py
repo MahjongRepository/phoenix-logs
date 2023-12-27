@@ -33,6 +33,7 @@ def main():
 
         print("Total: {}".format(total))
         print("Processed: {}".format(processed))
+        print("Unprocessed: {}".format(total - processed))
         print("With errors: {}".format(with_errors))
 
         if with_errors > 0:

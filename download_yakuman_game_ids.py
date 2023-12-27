@@ -5,59 +5,51 @@ from optparse import OptionParser
 import requests
 
 from download_game_ids import DownloadGameId
-from live_games.db import get_current_time
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 db_folder = os.path.join(current_directory, "db")
 
 
 def main():
-    start_year = 2006
-
+    """
+    The first date for available yakuman logs is 2006-10
+    """
     parser = OptionParser()
     parser.add_option("-y", "--year", type="string")
     parser.add_option("-m", "--month", type="string")
-    parser.add_option("-p", "--db_path", type="string")
     opts, _ = parser.parse_args()
 
-    current_date = get_current_time()
-    stop_year = current_date.year
+    if len(opts.month) != 2:
+        print("Month should be 2 digits")
+        return
 
-    if opts.db_path:
-        db_file = opts.db_path
-    else:
-        db_file = os.path.join(db_folder, "yakuman.db")
+    yakuman_folder = os.path.join(db_folder, "yakuman")
+    if not os.path.exists(yakuman_folder):
+        os.makedirs(yakuman_folder)
 
-    downloader = DownloadGameId(None, db_file, None, None)
+    yakuman_year_folder = os.path.join(yakuman_folder, opts.year)
+    if not os.path.exists(yakuman_year_folder):
+        os.makedirs(yakuman_year_folder)
+
+    db_file = os.path.join(yakuman_year_folder, f"{opts.month}.db")
+
+    downloader = DownloadGameId(None, db_file, None, None, False)
     if not os.path.exists(db_file):
         downloader.set_up_database()
 
-    if opts.year and opts.month:
-        download_ids_for_date(downloader, opts.year, opts.month, [])
-        return
-
-    added_log_ids = []
-
-    for year in range(start_year, stop_year + 1):
-        months = ["{:02}".format(x) for x in range(1, 13)]
-
-        # for 2006 year we have statistics only for three months
-        if year == start_year:
-            months = ["10", "11", "12"]
-
-        # we don't need to load data from the future
-        if stop_year == year:
-            months = ["{:02}".format(x) for x in range(1, current_date.month)]
-
-        for month in months:
-            download_ids_for_date(downloader, year, month, added_log_ids)
+    download_ids_for_date(downloader, opts.year, opts.month)
 
 
-def download_ids_for_date(downloader, year: int, month: str, added_log_ids):
+def download_ids_for_date(downloader, year: str, month: str):
     url = f"https://tenhou.net/sc/{year}/{month}/ykm.js"
     print(url)
 
-    response = requests.get(url).content.decode("utf-8")
+    response = requests.get(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"
+        },
+    ).content.decode("utf-8")
 
     if "ykm=['" in response:
         data = parse_new_format(response)
@@ -65,6 +57,7 @@ def download_ids_for_date(downloader, year: int, month: str, added_log_ids):
         data = parse_old_format(response)
 
     results = []
+    added_log_ids = []
     for x in data:
         date = format_date(year, month, x[0])
         log_id = clean_up_log_id(x[1])

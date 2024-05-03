@@ -1,6 +1,6 @@
 requests==2.31.0
 pytz==2023.3.post1
-tqdm==4.66.1
+tqdm==4.66.3
 
 isort==5.13.2
 black==23.12.1

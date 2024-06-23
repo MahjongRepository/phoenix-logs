@@ -71,10 +71,7 @@ To download log content for already downloaded IDs use this command:
 
 Where is `-l` is how many items to download and `-t` is the number of threads to use.
 
-It will create N threads and parallel downloads. 
-
-You can choose that `-l` and `-t` numbers to download logs that will take ~one minute and add this command to a cron job. 
-I used `-l 180 -t 5` for my downloads.
+Tenhou allows to use only one thread to download logs: https://x.com/tsuno_s/status/1804487739657580636
 
 # Validate that downloaded logs can be parsed
 

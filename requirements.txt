@@ -3,4 +3,4 @@ pytz==2023.3.post1
 tqdm==4.66.1
 
 isort==5.13.2
-black==23.12.1
+black==24.3.0
